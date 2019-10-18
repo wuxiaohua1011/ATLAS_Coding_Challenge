@@ -42,6 +42,7 @@ Specifically, below are the functionalities that we want you to implement:
 1. Any interactions(buttons, textfields, etc) you decide to implement should be in the *Your Function* tab
 2. Display the original pointcloud in the upper display box(the upper display box with the room in the Sample Usage section)
 3. Display an arbitrary cropped out pointcloud in the lower display box(the lower display box with the wall in the Sample Usage section)
+4. Currently, when you click there are no points showing, but in the backend, it register a point click. We noted where you can display points in `main.py`, line 239. Implement when canvas is clicked, a point will be displayed functionality 
 
 Stretch Goal:
 1. In the Your Function tab, implement input fields that user can provide arbitrary X, Y, Z coordinates, and using those X,Y,Z coordinates, crop out the respective portion of the pointcloud. If any error occurs, write it in the `message_center` in the lower left corner

@@ -28,7 +28,8 @@ class AtlasAnnotationTool(QWidget):
 
         self.current_data_file_name = None
         self.current_result_point_indices = []
-        # scene variables -- general
+
+        # scene variables -- common
         self.upperScene = Scene()
         self.lowerScene = Scene()
         self.message_center = None
@@ -49,7 +50,7 @@ class AtlasAnnotationTool(QWidget):
 
         # Demo
         # self.addSegmentationItems(["Placeholder 1", "Placeholder 2"])
-        # pcd = o3d.io.read_point_cloud("./data/scene0122_01_vh_clean_2.ply")
+        # pcd = o3d.io.read_point_cloud("./data/scene.ply")
         # self.upperScene.render(pcd)
         self.window.show()
         app.exec_()
@@ -92,6 +93,9 @@ class AtlasAnnotationTool(QWidget):
 
     ####### ON CLICK FUNCTIONS #######
     def segmentation_list_item_double_clicked(self):
+        '''
+        When an item is double clicked, read that file and render it onto the upper scene
+        '''
         current_item_text = self.segmentation_list.currentItem().text()
         try:
             current_item_index = int(current_item_text.split(" | ")[0])
@@ -116,6 +120,9 @@ class AtlasAnnotationTool(QWidget):
 
 
     def btn_common_load_clicked(self):
+        '''
+        When load is clicked, load the file and render it onto the upper scene
+        '''
         filename = self.openFileNamesDialog()
         # do filetype checking here
         if filename:
@@ -124,6 +131,12 @@ class AtlasAnnotationTool(QWidget):
             self.upperScene.render(o3d.io.read_point_cloud(filename))
 
     def btn_floodfill_done_clicked(self):
+        '''
+        When the floodfill button is clicked
+        1. get the selected points
+        2. get the surface that needs to be cropped
+        3. render the result in the lower scene
+        '''
         try:
             surface_to_crop = floodfill(self.selected_points_id, self.upperScene.pcd)
             self.current_result_point_indices = surface_to_crop
@@ -136,6 +149,11 @@ class AtlasAnnotationTool(QWidget):
         self.selected_points_id = []
 
     def btn_floodfill_cancel_clicked(self):
+        '''
+        When cancel is clicked
+        1. clear all selected points
+        2. clear the lower scene
+        '''
         self.writeMessage("Selected Segmentation Cancelled".format(len(self.selected_points_id)))
         self.selected_points_id = []
         self.current_result_point_indices = []
@@ -145,6 +163,12 @@ class AtlasAnnotationTool(QWidget):
         print("NOT IMPLEMENTED YET")
 
     def btn_save_clicked(self):
+        '''
+        When save is clicked
+        1. Prompt the user for the name and type of the object
+        2. save the object
+
+        '''
         data = prompt_saving()
         if len(self.current_result_point_indices) == 0:
             self.writeMessage("There are no points to save")
@@ -182,6 +206,14 @@ class AtlasAnnotationTool(QWidget):
             self.lowerScene.clear()
 
     def topCanvasClicked(self, event):
+        '''
+        When the top canvas is clicked
+        1. rotate the scene if necessary
+        2. record the point clicked if necessary
+        3. show the points clicked (STILL NEED TO IMPLEMENT)
+        :param event: event that the top canvas is clicked.
+        :return:
+        '''
         pcd = self.upperScene.pcd
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)
@@ -253,12 +285,19 @@ class AtlasAnnotationTool(QWidget):
         self.segmentation_list.addItem("{} | {} | {}".format(segment.id, segment.segment_name, segment.type_class))
 
     def writeMessage(self, message):
+        '''
+        Iteratively populate message
+        :param message: new message given
+        '''
         self.message = "{} \n> {}".format(self.message, message)  # format the text so that it is one per line
         self.message_center.setPlainText(self.message)  # no url displaying
         self.message_center.verticalScrollBar().setValue(
             self.message_center.verticalScrollBar().maximum())  # scroll bar to the bottom by default
 
     def populateSegmentList(self):
+        '''
+        On start, populate a list of segmentations that user previously did
+        '''
         try:
             import json
             with open(self.data_fname, 'r') as f:

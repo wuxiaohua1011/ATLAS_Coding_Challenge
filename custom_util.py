@@ -126,6 +126,15 @@ class FloodfillError(Exception):
 
 
 def floodfill(picked_points_id, pcd, batch_size=10, angle_error_tolerance=0.4, boundary_thickness=0.1):
+    '''
+    Floodfill until a given line is hit
+    :param picked_points_id: list of points that user picked
+    :param pcd: the Open3D pcd file
+    :param batch_size: at one time, how many points do we consider
+    :param angle_error_tolerance: the err tolerance for how different the normal vector between the two points that we consider them to be on the same plane
+    :param boundary_thickness: how close to the boundary do we consider a point to hit the boundary
+    :return: resulting surface are within the floodfilling reach of the current boudning line and seed point
+    '''
     if len(picked_points_id) != 3:
         raise FloodfillError(
             "ERROR: {} points is chosen, only 3 point floodfill is implemented".format(len(picked_points_id)))
@@ -163,15 +172,21 @@ def floodfill(picked_points_id, pcd, batch_size=10, angle_error_tolerance=0.4, b
 
 
 class Scene:
+    '''
+    The driver for rendering a scene
+    '''
     def __init__(self, canvas=None, view=None, marker=None, pcd=None, point_size=3.5):
-        self.canvas = canvas
-        self.view = view
-        self.marker = marker
-        self.pcd = pcd
-        self.point_size = point_size
+        self.canvas = canvas # upper or lower canvas
+        self.view = view # current view on the canvas
+        self.marker = marker # the markers(points) of the current view
+        self.pcd = pcd # the Open3D representation of the markers
+        self.point_size = point_size # desired point size to be rendered
 
-    # clears the data inside this scene, but still have the canvas
     def clear(self):
+        '''
+        clears the data inside this scene, but still have the canvas
+        :return: True if the scene sucessfully cleared, raise error otherwise
+        '''
         try:
             if self.view:
                 self.canvas.central_widget.remove_widget(self.view)
@@ -183,6 +198,14 @@ class Scene:
             raise Scene.SceneError("Unable to clear")
 
     def render(self, pcd=None, camera_mode='turntable', point_size=0, auto_clear=True):
+        '''
+        Render the new pcd
+        :param pcd: the new Open3D pcd data
+        :param camera_mode: camera's mode
+        :param point_size: each point's point size
+        :param auto_clear: True if clear the scene before rendering, false otherwise
+        :return:
+        '''
         if auto_clear:
             self.clear()
         point_size = self.point_size if point_size == 0 else point_size
