@@ -30,9 +30,9 @@ To see if everything is working properly, run
 The goal of this project is to create a software that can help segment and label point clouds for the entire UC Berkeley. The design of this software will be quite complex due to the nature of how big the dataset is and the degree of flexibility that we need to incorporate into the design of this program. 
 
 This coding challenge's goal is to 
-1. access your capability to work with ambiguity
-2. access your capability to work with open source libraries and codes with few documentation
-3. access your capability to understand existing codebase
+1. assess your capability to work with ambiguity
+2. assess your capability to work with open source libraries and codes with few documentation
+3. assess your capability to understand existing codebase
 
 
 Please note that this coding challenge is representative of the work that you will be actually doing in the project.
