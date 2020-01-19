@@ -64,4 +64,4 @@ Here are some of the major libraries that this project depends on. Please look i
 There are many tutorials/documentation online, feel free to use Google for more documentations.
 
 #### Miscellaneous
-- If at any point, you have any questions or concerns, please email us at XXX, we'll get back to you ASAP.
+- If at any point, you have any questions or concerns, please email us at `wuxiaohua1011@berkeley.edu`, we'll get back to you ASAP.
