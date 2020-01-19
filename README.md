@@ -49,7 +49,7 @@ Stretch Goal:
 2. Implement function for saving and deleting. (Hint: saving is done for you, please see how we are doing it and make sure that you comply with the same schema)
 
 ### Deliverable:
-- Please send us an email at XXX with the following content:
+- Please send us an email at `wuxiaohua1011@berkeley.edu` with the following content:
     1. The Github Repository URL that we can review your coding challenge
     2. Your Resume
 - Please make sure that if you installed any external packages, indicate in the Get Started Section or revise the requirements.txt. You are responsible for making sure that the program runs on any computers, and that the we have no problem running and reviewing your code.
