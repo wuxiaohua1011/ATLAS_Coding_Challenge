@@ -2,7 +2,7 @@ import numpy as np
 from PyQt5 import uic
 from PyQt5.QtWidgets import *
 import sys
-from vispy import scene
+from vispy import scene, color
 import vispy.scene
 from custom_util import prompt_saving, floodfill, crop_reserve, crop_remove, FloodfillError, Scene
 from models import Segment
@@ -112,7 +112,7 @@ class AtlasAnnotationTool(QWidget):
             color = np.asarray(pcd.colors)
             for i in index_to_highlight:
                 color[i] = (0, 1, 0)
-            pcd.colors = o3d.utility.Vector3dVector(color)
+            # pcd.colors = o3d.utility.Vector3dVector(color)
 
             self.upperScene.render(pcd)
         except ValueError as e:
@@ -129,6 +129,15 @@ class AtlasAnnotationTool(QWidget):
             self.current_data_file_name = filename
             self.writeMessage("Opening file <{}>".format(filename))
             self.upperScene.render(o3d.io.read_point_cloud(filename))
+
+            pcd = self.upperScene.pcd
+            points = np.asarray(pcd.points)
+            cmap = color.get_colormap('viridis')
+            colors = np.concatenate(list(map(cmap.map, np.linspace(0, 1, len(points)))))
+            self.upperScene.marker.set_gl_state('translucent', blend=True, depth_test=True)
+            kwargs = dict(symbol='o', size=self.point_size, edge_color=None)
+            self.upperScene.marker.set_data(points, face_color=colors, **kwargs)
+
 
     def btn_floodfill_done_clicked(self):
         '''
@@ -217,7 +226,9 @@ class AtlasAnnotationTool(QWidget):
         pcd = self.upperScene.pcd
         points = np.asarray(pcd.points)
         colors = np.asarray(pcd.colors)
-        # axis = scene.visuals.XYZAxis(parent=self.upper.scene)
+        
+        # set pos and color
+        kwargs = dict(symbol='o', size=self.point_size, edge_color=None)
 
         # prepare list of unique colors needed for picking
         ids = np.arange(1, len(points) + 1, dtype=np.uint32).view(np.uint8)
@@ -229,7 +240,8 @@ class AtlasAnnotationTool(QWidget):
             try:
                 self.upperScene.marker.update_gl_state(blend=False)
                 self.upperScene.marker.antialias = 0
-                self.upperScene.marker.set_data(points, edge_color=ids, face_color=ids, size=self.point_size)
+                self.upperScene.marker.set_data(points, face_color=ids, **kwargs)
+                # self.upperScene.marker.set_data(points, edge_color=ids, face_color=ids, size=self.point_size)
                 img = self.upperScene.canvas.render((pos[0] - 2,
                                                      pos[1] - 2,
                                                      2 * 10 + 1,
@@ -240,7 +252,8 @@ class AtlasAnnotationTool(QWidget):
             finally:
                 self.upperScene.marker.update_gl_state(blend=True)
                 self.upperScene.marker.antialias = 1
-                self.upperScene.marker.set_data(points, edge_color=colors, face_color=colors, size=self.point_size)
+                self.upperScene.marker.set_data(points, face_color=colors, **kwargs)
+                # self.upperScene.marker.set_data(points, edge_color=colors, face_color=colors, size=self.point_size)
             # We pick the pixel directly under the click, unless it is
             # zero, in which case we look for the most common nonzero
             # pixel value in a square region centered on the click.
